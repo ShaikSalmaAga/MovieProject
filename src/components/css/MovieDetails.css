@@ -1,0 +1,102 @@
+/* 🔲 Modal overlay background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* 🗂️ Modal content box */
+.modal-content {
+  background-color: #ffffff;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  animation: scaleIn 0.3s ease;
+}
+
+/* 🔍 Smooth opening animation */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 🎬 Movie Title */
+.modal-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1c1c1c;
+  margin-bottom: 1.2rem;
+}
+
+/* ℹ️ Info row */
+.modal-info {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.modal-info strong {
+  display: inline-block;
+  width: 110px;
+  color: #000;
+  font-weight: 600;
+}
+
+.modal-info span {
+  color: #444;
+  font-size: 15px;
+}
+
+/* ❌ Close button */
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1.3rem;
+  font-size: 1.2rem;
+  color: crimson;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #b3002d;
+}
+
+/* 📱 Responsive tweaks */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+  }
+
+  .modal-info strong {
+    width: 90px;
+  }
+
+  .modal-info span {
+    font-size: 14px;
+  }
+}

@@ -1,93 +1,103 @@
-//Import MovieCard component to show each movie
-import MovieCard from "../components/movieCard";
-
-//Import useState and useEffect hooks from React
+// ✅ Import React hooks
 import { useState, useEffect } from "react";
 
-// Import CSS file for styling
+// ✅ Import CSS
 import "../components/css/Home.css";
 
-// Import API functions
-import { getPopularMovies, searchMovies } from "../services/api";
+// ✅ Import components
+import MovieCard from "../components/movieCard";
+import MovieDetails from "../components/MovieDetails";
 
+// ✅ Import API service to get movies
+import { getPopularMovies } from "../services/api";
+
+// 🎬 Main Home component
 function Home() {
-  // Define state variables
-  const [searchQuery, setSearchQuery] = useState(""); // for search input
-  const [movies, setMovies] = useState([]);           // list of movies
-  const [error, setError] = useState(null);           // if error happens
-  const [loading, setLoading] = useState(true);       // to show loading message
+  // 🔍 Search input state
+  const [searchQuery, setSearchQuery] = useState("");
 
-  //Load popular movies when page first loads
+  // 🎞️ Movie list from backend
+  const [movies, setMovies] = useState([]);
+
+  // ⚠️ Error state for failed API
+  const [error, setError] = useState(null);
+
+  // ⏳ Loading state
+  const [loading, setLoading] = useState(true);
+
+  // 🎯 Selected movie (for modal)
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  // 📡 Fetch movies on first load
   useEffect(() => {
     const loadPopularMovies = async () => {
       try {
-        const popularMovies = await getPopularMovies();  // call API
-        setMovies(popularMovies);                        // set movies to display
+        const popularMovies = await getPopularMovies();
+        console.log("Fetched movies:", popularMovies);
+        setMovies(popularMovies);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         setError("Failed to load movies...");
       } finally {
-        setLoading(false);  // stop loading message
+        setLoading(false);
       }
     };
 
-    loadPopularMovies(); // run the function
-  }, []); // empty dependency → run only once when component mounts
+    loadPopularMovies();
+  }, []);
 
-  //Handle form submit (when user searches)
-  const handleSearch = async (e) => {
-    e.preventDefault(); // prevent page reload
-
-    if (!searchQuery.trim()) return; // if input is empty, stop
-    if (loading) return;             // if already loading, stop
-
-    setLoading(true); // show loading
-
-    try {
-      const searchResults = await searchMovies(searchQuery); // call API with search
-      setMovies(searchResults);        // update movie list
-      setError(null);                  // clear previous error
-    } catch (err) {
-      console.log(err);
-      setError("Failed to search movies...");
-    } finally {
-      setLoading(false); // hide loading after search
-    }
-  };
-
-  //Conditional rendering: show loading or error
+  // ⏳ Loading state
   if (loading) return <p>Loading movies...</p>;
+
+  // ❌ Error message
   if (error) return <p>{error}</p>;
 
+  // ❗ No results
+  if (!movies || movies.length === 0) return <p>No movies found.</p>;
+
+  // ✅ Main UI rendering
   return (
     <div className="home">
-      {/*Search Form */}
-      <form onSubmit={handleSearch} className="search-form">
+      {/* 🔍 Search input */}
+      <form onSubmit={(e) => e.preventDefault()} className="search-form">
         <input
           type="text"
           placeholder="Search for movies..."
           className="search-input"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // update searchQuery state
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button type="submit" className="search-button">
-          Search
-        </button>
       </form>
 
-      {/* Show Movies */}
+      {/* 🎞️ Movie cards grid */}
       <div className="movies-grid">
-        {movies.map(
-          (movie) =>
-            movie.title
-              .toLowerCase()
-              .startsWith(searchQuery.toLowerCase()) && ( // filter movies by title
-              <MovieCard movie={movie} key={movie.id} />
-            )
-        )}
+        {movies
+          .filter((movie) => movie.title) // ensure title exists
+          .filter((movie) =>
+            movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              onClick={() => setSelectedMovie(movie)} // ✅ open modal on click
+            />
+          ))}
       </div>
+
+      {/* 💬 Movie details modal */}
+      {selectedMovie && (
+        <MovieDetails
+          movie={{
+            ...selectedMovie,
+            year: selectedMovie.release_date?.split("-")[0], // extract year
+          }}
+          onClose={() => setSelectedMovie(null)} // ❌ close handler
+        />
+      )}
     </div>
   );
 }
 
+// ✅ Export component for use in App
 export default Home;

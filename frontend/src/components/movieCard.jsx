@@ -1,53 +1,69 @@
-import "./css/MovieCard.css";
-
-// Import context to access favorite functions
+import React from "react";
+import { Card, CardContent, CardMedia, Typography, IconButton, Box } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useMovieContext } from "../contexts/MovieContext";
 
-function MovieCard({ movie }) {
-  // Destructure context functions and check favorite status
+function MovieCard({ movie, onClick }) {
   const { isFavorite, addToFavorite, removeFromFavorite } = useMovieContext();
-
-  // Check if current movie is in favorites
   const favorite = isFavorite(movie.id);
+  const year = movie.release_date?.split("-")[0] || "N/A";
 
-  // Handle favorite button click
-  function onFavoriteClick(e) {
-    e.preventDefault(); // Stop page reload
-
-    // Add or remove movie from favorites
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation(); // prevent modal from opening
     if (favorite) {
       removeFromFavorite(movie.id);
     } else {
       addToFavorite(movie);
     }
-  }
+  };
 
   return (
-    <div className="movie-card">
-      <div className="movie-poster">
-        {/* Movie poster image */}
-        <img
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} // ✅ Fixed: wrap string with backticks
+    <Card
+      onClick={onClick}
+      sx={{
+        width: 200,
+        m: 2,
+        cursor: "pointer",
+        boxShadow: 3,
+        borderRadius: 2,
+        transition: "0.3s",
+        "&:hover": { transform: "scale(1.03)" },
+      }}
+    >
+      <Box sx={{ position: "relative" }}>
+        <CardMedia
+          component="img"
+          image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
           alt={movie.title}
+          height="300"
         />
-
-        {/* Favorite button - shows ❤️ if favorite, 🤍 if not */}
-        <button
-          className={`favorite-btn ${favorite ? "active" : ""}`} // ✅ Fixed: added backticks and quotes
-          onClick={onFavoriteClick}
+        <IconButton
+          onClick={handleFavoriteClick}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            bgcolor: "rgba(255,255,255,0.7)",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
+          }}
         >
-          {favorite ? "❤️" : "🤍"}
-        </button>
-      </div>
-
-      <div className="movie-info">
-        {/* Show movie title */}
-        <h3>{movie.title}</h3>
-
-        {/* Show only release year from full date */}
-        <p>{movie.release_date?.split("-")[0]}</p>
-      </div>
-    </div>
+          {favorite ? (
+            <FavoriteIcon color="error" />
+          ) : (
+            <FavoriteBorderIcon color="action" />
+          )}
+        </IconButton>
+      </Box>
+      <CardContent sx={{ textAlign: "center" }}>
+        <Typography variant="subtitle1" fontWeight="bold">
+          {movie.title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {year}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }
 

@@ -14,13 +14,13 @@ export const MovieProvider = ({ children }) => {
 
   //On first load: read from localStorage
   useEffect(() => {
-    const storedFavs = localStorage.getItem("favorites"); // 🔄 key should match below
+    const storedFavs = localStorage.getItem("favorites"); //key should match below
     if (storedFavs) setFavorites(JSON.parse(storedFavs));
   }, []);
 
   //When favorites change: update localStorage
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites)); // ❌ was "favorite"
+    localStorage.setItem("favorites", JSON.stringify(favorites)); // was "favorite"
   }, [favorites]);
 
   //Add movie to favorites
